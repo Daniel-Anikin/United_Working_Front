@@ -43,7 +43,7 @@ def find_coordinates_of_cards(cnts, image):
 
 def draw_rectangle_around_cards(cards_coordinates, image):
     for key, value in cards_coordinates.items():
-        rec = cv2.rectangle(image, (value[0], value[1]), (value[2], value[3], value[4], value[5]), (255, 255, 0), 2)
+        rec = cv2.rectangle(image, (value[0], value[1]), (value[2], value[3]), (255, 255, 0), 2)
         cv2.putText(rec, key, (value[0], value[1] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (36, 255, 12), 1)
     cv2.imshow('Image', image)
     cv2.waitKey(0)
