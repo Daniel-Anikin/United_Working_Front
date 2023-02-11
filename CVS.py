@@ -4,7 +4,7 @@ import os
 
 def find_features(img1):
     correct_matches_dct = {}
-    directory = 'images/cards/sample/'
+    directory = 'images/dices/sample/'
     for image in os.listdir(directory):
         img2 = cv2.imread(directory+image, 0)
         orb = cv2.ORB_create()
@@ -25,8 +25,7 @@ def find_features(img1):
 def find_contours_of_cards(image):
     blurred = cv2.GaussianBlur(image, (3, 3), 0)
     T, thresh_img = cv2.threshold(blurred, 215, 255, cv2.THRESH_BINARY)
-    (_, cnts, _) = cv2.findContours(thresh_img, cv2.RETR_EXTERNAL,
-                                    cv2.CHAIN_APPROX_SIMPLE)
+    cnts, _ = cv2.findContours(thresh_img, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     return cnts
 
 
@@ -38,20 +37,21 @@ def find_coordinates_of_cards(cnts, image):
             img_crop = image[y - 15:y + h + 15, x - 15:x + w + 15]
             cards_name = find_features(img_crop)
             cards_coordinates[cards_name] = (x - 15, y - 15, x + w + 15, y + h + 15)
+            cv2.imshow('cf', img_crop)
+            cv2.waitKey(0)
     return cards_coordinates
 
-
-def draw_rectangle_aroud_cards(cards_coordinates, image):
+def draw_rectangle_around_cards(cards_coordinates, image):
     for key, value in cards_coordinates.items():
-        rec = cv2.rectangle(image, (value[0], value[1]), (value[2], value[3]), (255, 255, 0), 2)
+        rec = cv2.rectangle(image, (value[0], value[1]), (value[2], value[3], value[4], value[5]), (255, 255, 0), 2)
         cv2.putText(rec, key, (value[0], value[1] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (36, 255, 12), 1)
     cv2.imshow('Image', image)
     cv2.waitKey(0)
 
 
 if __name__ == '__main__':
-    main_image = cv2.imread('images/cards/main_image/cards.JPG')
+    main_image = cv2.imread('images/dices/main_image/dices.jpg')
     gray_main_image = cv2.cvtColor(main_image, cv2.COLOR_BGR2GRAY)
     contours = find_contours_of_cards(gray_main_image)
     cards_location = find_coordinates_of_cards(contours, gray_main_image)
-    draw_rectangle_aroud_cards(cards_location, main_image)
+    draw_rectangle_around_cards(cards_location, main_image)
