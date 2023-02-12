@@ -11,10 +11,10 @@ def find_features(img1):
         kp1, des1 = orb.detectAndCompute(img1, None)
         kp2, des2 = orb.detectAndCompute(img2, None)
         bf = cv2.BFMatcher()
-        matches = bf.knnMatch(des1, des2, k=2)
+        matches = bf.knnMatch(des1, des2, k=3)
         correct_matches = []
         for m, n in matches:
-            if m.distance < 0.75*n.distance:
+            if m.distance < 0.3*n.distance:
                 correct_matches.append([m])
                 correct_matches_dct[image.split('.')[0]] = len(correct_matches)
     correct_matches_dct = dict(sorted(correct_matches_dct.items(),
@@ -37,9 +37,8 @@ def find_coordinates_of_cards(cnts, image):
             img_crop = image[y - 15:y + h + 15, x - 15:x + w + 15]
             cards_name = find_features(img_crop)
             cards_coordinates[cards_name] = (x - 15, y - 15, x + w + 15, y + h + 15)
-            cv2.imshow('cf', img_crop)
-            cv2.waitKey(0)
     return cards_coordinates
+
 
 def draw_rectangle_around_cards(cards_coordinates, image):
     for key, value in cards_coordinates.items():
