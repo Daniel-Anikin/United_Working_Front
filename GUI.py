@@ -1,5 +1,4 @@
 import sys
-import sqlite3
 import serial
 
 from PyQt5.QtWidgets import QApplication, QWidget, QTableWidgetItem, QInputDialog, QSlider
@@ -16,6 +15,18 @@ class MainScreen(QWidget, Ui_Main_Screen):
         self.Start_Btn.clicked.connect(self.start)
         self.Infinity_Btn.clicked.connect(self.infinity)
         self.Stop_Btn.clicked.connect(self.stop)
+
+    def start(self):
+        pass
+
+    def infinity(self):
+        pass
+
+    def stop(self):
+        pass
+
+    def debugging_menu(self):
+        pass
 
 
 if __name__ == '__main__':
