@@ -1,6 +1,8 @@
 import cv2
+import sqlite3
 
 count = 0
+sum_of_points_db = sqlite3.connect("sum_of_points.db")
 
 
 def find_contours_of_dices_and_points(image):
@@ -23,4 +25,7 @@ if __name__ == '__main__':
     gray_main_image = cv2.cvtColor(main_image, cv2.COLOR_BGR2GRAY)
     contours = find_contours_of_dices_and_points(gray_main_image)
     find_sum_of_points(contours)
-    print(count)
+    cur = sum_of_points_db.cursor()
+    cur.execute(
+        "insert into sum_table(result) values(?);", str(count))
+    sum_of_points_db.commit()
