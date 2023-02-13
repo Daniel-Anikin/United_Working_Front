@@ -11,19 +11,24 @@ class MainScreen(QWidget, Ui_Main_Screen):
         super().__init__()
         self.setupUi(self)
         self.setWindowTitle('Main screen')
+        self.connecting_btns()
+        self.ser = serial.Serial('/dev/ttyACM0', 115200, timeout=1)
+        self.ser.flush()
+
+    def connecting_btns(self):
         self.Debug_Btn.clicked.connect(self.debugging_menu)
         self.Start_Btn.clicked.connect(self.start)
         self.Infinity_Btn.clicked.connect(self.infinity)
         self.Stop_Btn.clicked.connect(self.stop)
 
     def start(self):
-        pass
+        self.ser.write(b"Start_Btn.clicked = 1\n")
 
     def infinity(self):
-        pass
+        self.ser.write(b"Infinity_Btn.clicked = 1\n")
 
     def stop(self):
-        pass
+        self.ser.write(b"Stop_Btn.clicked = 1\n")
 
     def debugging_menu(self):
         pass
