@@ -1,9 +1,11 @@
 import sys
 import serial
 
-from PyQt5.QtWidgets import QApplication, QWidget, QTableWidgetItem, QInputDialog, QSlider
+from PyQt5.QtWidgets import QApplication, QWidget, QInputDialog
 from MainWidget import Ui_Main_Screen
 from DebuggingWidget import Ui_Debugging_menu_screen
+
+flag = 0
 
 
 class MainScreen(QWidget, Ui_Main_Screen):
@@ -12,6 +14,8 @@ class MainScreen(QWidget, Ui_Main_Screen):
         self.setupUi(self)
         self.setWindowTitle('Main screen')
         self.connecting_btns()
+        self.Time_of_rotation.valueChanged.connect(self.time_num.display)
+        self.Num_of_iterations.valueChanged.connect(self.iter_num.display)
         self.ser = serial.Serial('/dev/ttyACM0', 115200, timeout=1)
         self.ser.flush()
 
@@ -22,13 +26,26 @@ class MainScreen(QWidget, Ui_Main_Screen):
         self.Stop_Btn.clicked.connect(self.stop)
 
     def start(self):
-        self.ser.write(b"0x00\n")
+        name, choice = QInputDialog.getItem(self, 'Вы уверены?', 'Выберите "Да" для запуска программы в'
+                                                                 ' обычном режиме.\n'
+                                                                 'Время вращения барабана'
+                                                                 f' - {self.time_num.intValue()}с,\n'
+                                                                 f'Количество итераций - {self.iter_num.intValue()}.',
+                                            ('Да', 'Нет'), 1, False)
+        if choice and name == 'Да' and flag == 0:
+            self.ser.write(b"0x01\n")
 
     def infinity(self):
-        self.ser.write(b"0x01\n")
+        name, choice = QInputDialog.getItem(self, 'Вы уверены?', 'Выберите "Да" для запуска программы в'
+                                                                 ' бесконечном режиме.', ('Да', 'Нет'), 1, False)
+        if choice and name == 'Да' and flag == 0:
+            self.ser.write(b"0x02\n")
 
     def stop(self):
-        self.ser.write(b"0x02\n")
+        name, choice = QInputDialog.getItem(self, 'Вы уверены?', 'Выберите "Да" для остановки программы.',
+                                            ('Да', 'Нет'), 1, False)
+        if choice and name == 'Да':
+            self.ser.write(b"0x00\n")
 
     def debugging_menu(self):
         self.debug_widget = DebuggingMenu()
@@ -52,22 +69,42 @@ class DebuggingMenu(QWidget, Ui_Debugging_menu_screen):
         self.Undo_Btn.clicked.connect(self.undo)
 
     def stop(self):
-        self.ser.write(b"0x02\n")
+        name, choice = QInputDialog.getItem(self, 'Вы уверены?', 'Выберите "Да" для остановки программы.',
+                                            ('Да', 'Нет'), 1, False)
+        if choice and name == 'Да':
+            self.ser.write(b"0x00\n")
 
     def rotate(self):
-        self.ser.write(b"0x10\n")
+        name, choice = QInputDialog.getItem(self, 'Вы уверены?', 'Выберите "Да" для запуска вращения барабана.'
+                                                                 'Время вращения барабана указано в изначальном виде.',
+                                            ('Да', 'Нет'), 1, False)
+        if choice and name == 'Да' and flag == 0:
+            self.ser.write(b"0x10\n")
 
     def CSV(self):
-        self.ser.write(b"0x11\n")
+        name, choice = QInputDialog.getItem(self, 'Вы уверены?', 'Выберите Да для запуска СТЗ.',
+                                            ('Да', 'Нет'), 1, False)
+        if choice and name == 'Да' and flag == 0:
+            self.ser.write(b"0x11\n")
 
     def lift_up(self):
-        self.ser.write(b"0x12\n")
+        name, choice = QInputDialog.getItem(self, 'Вы уверены?', 'Выберите "Да" для запуска системы подъёма.',
+                                            ('Да', 'Нет'), 1, False)
+        if choice and name == 'Да' and flag == 0:
+            self.ser.write(b"0x12\n")
 
     def lift_down(self):
-        self.ser.write(b"0x13\n")
+        name, choice = QInputDialog.getItem(self, 'Вы уверены?', 'Выберите "Да" для спуска системы подъёма.',
+                                            ('Да', 'Нет'), 1, False)
+        if choice and name == 'Да' and flag == 0:
+            self.ser.write(b"0x13\n")
 
     def load(self):
-        self.ser.write(b"0x14\n")
+        name, choice = QInputDialog.getItem(self, 'Вы уверены?', 'Выберите "Да" для установки барабана '
+                                                                 'в режим загрузки.',
+                                            ('Да', 'Нет'), 1, False)
+        if choice and name == 'Да' and flag == 0:
+            self.ser.write(b"0x14\n")
 
     def undo(self):
         self.main_widget = MainScreen()
