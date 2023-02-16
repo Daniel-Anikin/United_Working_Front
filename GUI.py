@@ -2,7 +2,6 @@ import sys
 import serial
 
 from PyQt5.QtWidgets import QApplication, QWidget, QTableWidgetItem, QInputDialog, QSlider
-from PyQt5.QtGui import QImage, QPalette, QBrush
 from MainWidget import Ui_Main_Screen
 from DebuggingWidget import Ui_Debugging_menu_screen
 
@@ -42,7 +41,7 @@ class DebuggingMenu(QWidget, Ui_Debugging_menu_screen):
         super().__init__()
         self.setupUi(self)
         self.connecting_btns()
-        
+
     def connecting_btns(self):
         self.Stop_Btn.clicked.connect(self.stop)
         self.Rotate_Btn.clicked.connect(self.rotate)
