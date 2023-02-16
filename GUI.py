@@ -23,15 +23,12 @@ class MainScreen(QWidget, Ui_Main_Screen):
         self.Stop_Btn.clicked.connect(self.stop)
 
     def start(self):
-        pass
         self.ser.write(b"0x00\n")
 
     def infinity(self):
-        pass
         self.ser.write(b"0x01\n")
 
     def stop(self):
-        pass
         self.ser.write(b"0x02\n")
 
     def debugging_menu(self):
