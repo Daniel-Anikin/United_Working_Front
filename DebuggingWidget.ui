@@ -160,7 +160,7 @@
     <string>Stop process</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="pushButton">
+  <widget class="QPushButton" name="Undo_Btn">
    <property name="geometry">
     <rect>
      <x>20</x>
