@@ -41,7 +41,6 @@ class DebuggingMenu(QWidget, Ui_Debugging_menu_screen):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
-
         self.connecting_btns()
         
     def connecting_btns(self):
