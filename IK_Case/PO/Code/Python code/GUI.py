@@ -12,7 +12,6 @@ class MainScreen(QWidget, Ui_Main_Screen):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
-        self.setWindowTitle('Main screen')
         self.connecting_btns()
         self.Time_of_rotation.valueChanged.connect(self.time_num.display)
         self.Num_of_iterations.valueChanged.connect(self.iter_num.display)
