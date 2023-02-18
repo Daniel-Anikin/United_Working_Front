@@ -59,19 +59,12 @@ class DebuggingMenu(QWidget, Ui_Debugging_menu_screen):
         self.connecting_btns()
 
     def connecting_btns(self):
-        self.Stop_Btn.clicked.connect(self.stop)
         self.Rotate_Btn.clicked.connect(self.rotate)
         self.CSV_Btn.clicked.connect(self.CSV)
         self.Lift_Up_Btn.clicked.connect(self.lift_up)
         self.Lift_Down_Btn.clicked.connect(self.lift_down)
         self.Load_Btn.clicked.connect(self.load)
         self.Undo_Btn.clicked.connect(self.undo)
-
-    def stop(self):
-        name, choice = QInputDialog.getItem(self, 'Вы уверены?', 'Выберите "Да" для остановки программы.',
-                                            ('Да', 'Нет'), 1, False)
-        if choice and name == 'Да':
-            self.ser.write(b"0x00\n")
 
     def rotate(self):
         name, choice = QInputDialog.getItem(self, 'Вы уверены?', 'Выберите "Да" для запуска вращения барабана.'

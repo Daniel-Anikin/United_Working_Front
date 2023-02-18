@@ -139,27 +139,6 @@
     <string>Debugging menu</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="Stop_Btn">
-   <property name="geometry">
-    <rect>
-     <x>455</x>
-     <y>360</y>
-     <width>150</width>
-     <height>100</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <family>Times New Roman</family>
-     <pointsize>12</pointsize>
-     <weight>75</weight>
-     <bold>true</bold>
-    </font>
-   </property>
-   <property name="text">
-    <string>Stop process</string>
-   </property>
-  </widget>
   <widget class="QPushButton" name="Undo_Btn">
    <property name="geometry">
     <rect>
