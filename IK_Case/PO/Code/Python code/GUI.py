@@ -13,12 +13,12 @@ class MainScreen(QWidget, Ui_Main_Screen):
         super().__init__()
         self.setupUi(self)
         self.connecting_btns()
-        self.Time_of_rotation.valueChanged.connect(self.time_num.display)
+        self.Time_of_rotation.valueChanged.connect(self.time_num.display)  # подключаем ползунки
         self.Num_of_iterations.valueChanged.connect(self.iter_num.display)
-        self.ser = serial.Serial('/dev/ttyACM0', 115200, timeout=1)
+        self.ser = serial.Serial('/dev/ttyACM0', 115200, timeout=1)  # теперь мы можем отправлять сигналы на serial-порт
         self.ser.flush()
 
-    def connecting_btns(self):
+    def connecting_btns(self):  # подключаем все кнопки основного экрана
         self.Debug_Btn.clicked.connect(self.debugging_menu)
         self.Start_Btn.clicked.connect(self.start)
         self.Infinity_Btn.clicked.connect(self.infinity)
@@ -32,7 +32,7 @@ class MainScreen(QWidget, Ui_Main_Screen):
                                                                  f'Количество итераций - {self.iter_num.intValue()}.',
                                             ('Да', 'Нет'), 1, False)
         if choice and name == 'Да' and flag == 0:
-            self.ser.write(b"0x01\n")
+            self.ser.write(b"0x01\n")  # отсылаем сигнал о запуске программы в конечном режиме
 
     def infinity(self):
         name, choice = QInputDialog.getItem(self, 'Вы уверены?', 'Выберите "Да" для запуска программы в'
@@ -104,7 +104,7 @@ class DebuggingMenu(QWidget, Ui_Debugging_menu_screen):
         self.main_widget.show()
 
 
-if __name__ == '__main__':
+if __name__ == '__main__':  # запуск дисплея
     app = QApplication(sys.argv)
     ex = MainScreen()
     ex.show()
