@@ -10,6 +10,14 @@
 		  //_//
 		   ///
 			/
+			
+///Импортированные библиотеки
+#include <Servo.h>
+
+///Подключения:
+#define PIN_DRUM 1
+Servo liftServo;
+int carriage = 3;
 
 ///Константы-состояния:
 #define INIT_ST 0
@@ -31,20 +39,28 @@
 #define LIFT_DOWN_COMMAND 5
 #define CV_LAUNCH_COMMAND 6
 #define STOP_COMMAND 7
-#define NO_COMMAND 8	
+#define UNLOAD_COMMAND 8
+#define UPLOAD_COMMAND 9
+#define NO_COMMAND 10	
 #define MAX_COMMAND NO_COMMAND
 
 ///Константы времени:
 #define INIT_TIMEOUT 5000
 #define DICE_TOWER_TIMEOUT 5000
 #define CV_TIMEOUT 7000
+#define DRUM_LOAD_TIMEOUT 4000
+#define LIFT_TIMEOUT 55000
+
+///Константы скорости:
+#define DRUM_SPEED 100
+#define LIFT_SPEED 200
 
 ///Переменные времени:
 uint32_t drum_timeout = 10000;
-uint32_t lift_timeout = 40000;
 
 ///Глобальные переменные:
-int state = INIT_ST; ///хранит код текущего состояния системы
+int state = INIT_ST; //хранит код текущего состояния системы
+bool conState = false; //показывает подключение к базе данных
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -53,6 +69,10 @@ void initSt_handler(int cmd){
 	connect_dataBase();
 	delay(INIT_TIMEOUT);
 	state = WAITING_ST;
+}
+
+void connect_dataBase(){
+	conState = true;
 }
 
 void waitingSt_handler(int cmd){
@@ -123,45 +143,78 @@ void infiniteModeSt_handler(int cmd, int count){
 
 void launch_cycle(){
 	drum_launch();
-	drum_stop();
-	drum_unload();
-	delay(DICE_TOWER_TIMEOUT);
 	CV_launch();
 	delay(CV_TIMEOUT);
+	drum_load();
 	lift_up();
-	drum_moveLoad();
-	drum_diceLoad();
 	lift_down();
 }
 
+/// launch_cycle подфункции
 void drum_launch(){
-	drumServo.write(DRUM_SPEED);
-	delay(drum_timeout);
+	// Плавно разгоняем двигатель
+	for(uint32_t i = 0; i < DRUM_SPEED; i++) {
+		analogWrite(PIN_DRUM, i);
+		delay(20);
+	}
+	drum_timeout = Serial.read()
+	delay(drum_timeout); // Двигатель работает drum_timeout на полную мощность
+	while (cmd!=UNLOAD_COMMAND){
+		analogWrite(PIN_DRUM, DRUM_SPEED);
+	}
+	// Плавно тормозим двигатель
+	for(uint32_t i = DRUM_SPEED; i < 0; i--) {
+		analogWrite(PIN_DRUM, i);
+		delay(20);
+	}
+	delay(DICE_TOWER_TIMEOUT);
+}
+
+void CV_launch(){
+	while (cmd!=CV_LAUNCH_COMMAND){
+		Serial.print();
+	}
+}
+
+void drum_load(){
+	while (cmd!=UPLOAD_COMMAND){
+		analogWrite(PIN_DRUM, DRUM_SPEED);
+	}
+	delay(DRUM_LOAD_TIMEOUT);
 }
 
 void lift_up(){
-	liftServo.write(LIFT_SPEED);
-	delay(lift_timeout);
+	setMaxSpeed(LIFT_SPEED);
+	delay(LIFT_TIMEOUT);
+	liftServo.write(135);
+	liftServo.write(90);
+	delay(LIFT_TIMEOUT);
 }
 
-void lift_up(){
-	liftServo.write(LIFT_SPEED);
-	delay(lift_timeout);
-}	
+void lift_down(){
+	reverse(true);
+	setMaxSpeed(LIFT_SPEED);
+	delay(LIFT_TIMEOUT);
+}
 
-
+void home(){
+	drum_load();
+	lift_down();
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void setup() {
-Serial.begin(115200);
+void setup(){
+	Serial.begin(115200);
+	liftServo.attach(2);
+	pinMode(carriage, OUTPUT);
 }
 
 int getCommand(){
 	int cmd = NO_COMMAND;
 	if (Serial.available()){
 		cmd = Serial.read();
-		if (cmd > SCANNING_ERR_CMD){
+		if (cmd > MAX_COMMAND){
 			int cmd = NO_COMMAND;
 		}
 		else{
@@ -178,16 +231,36 @@ void loop(){
 		initSt_handler(cmd);
 		break;
 		}
-		case SYSTEM_START_STATE:{
+		case WAITING_ST:{
 		waitingSt_handler(cmd);
 		break;
 		}
-		case NORMAL_MODE_STATE:{
+		case FINITE_MODE_ST:{
 		finiteModeSt_handler(cmd);
 		break;
 		}
 		case INFINITE_MODE_STATE:{
 		infiniteModeSt_handler(cmd);
+		break;
+		}
+		case DRUM_LAUNCH_ST:{
+		drum_launch(cmd);
+		break;
+		}
+		case DRUM_LOAD_COMMAND:{
+		drum_load(cmd);
+		break;
+		}
+		case LIFT_UP_ST:{
+		lift_up(cmd);
+		break;
+		}
+		case LIFT_DOWN_ST:{
+		lift_down(cmd);
+		break;
+		}
+		case CV_LAUNCH_ST:{
+		CV_launch(cmd);
 		break;
 		}
 	}
