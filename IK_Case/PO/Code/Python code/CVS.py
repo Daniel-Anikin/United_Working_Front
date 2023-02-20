@@ -4,14 +4,14 @@ import sqlite3
 sum_of_points_db = sqlite3.connect("sum_of_points.db")
 
 
-def find_dicCon(image):
+def find_dicCon(image):  # находим контуры изображений
     blurred = cv2.GaussianBlur(image, (3, 3), 0)
     T, thresh_img = cv2.threshold(blurred, 215, 255, cv2.THRESH_BINARY)
     cnts, _ = cv2.findContours(thresh_img, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
     return cnts
 
 
-def find_pointSum(cnts):
+def find_pointSum(cnts):  # находим сумму выпавших значений, пользуясь контурами
     count = 0
     for i in range(0, len(cnts)):
         w, h = cv2.boundingRect(cnts[i])[2:]
@@ -27,5 +27,5 @@ if __name__ == '__main__':
     pointSum = find_pointSum(contours)
     cur = sum_of_points_db.cursor()
     cur.execute(
-        "insert into sum_table(result) values(?);", str(pointSum))
+        "insert into sum_table(result) values(?);", str(pointSum))  # записываем результат в БД
     sum_of_points_db.commit()
